@@ -12,17 +12,17 @@ root/:
 ### 1. Clone the repository
 
 ```bash
-git clone ...
+git clone https://github.com/Anna-Kashyra/recipe-book.git
 cd recipe-book
 ```
 
 ### 2. Configure .env files
-- frontend/.env
+- frontend/.env.local
 ```bash
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
 
-- backend/.env
+- backend/.env.local
 ```bash
 RECIPE_API_BASE_URL=https://www.themealdb.com/api/json/v1/1
 PORT=5000
