@@ -6,25 +6,28 @@ export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
   @Get()
-  getRecipes(
-    @Query('i') ingredient?: string,
-    @Query('a') area?: string,
-    @Query('c') category?: string,
-    @Query('s') search?: string,
-  ) {
-    if (ingredient) {
-      return this.recipeService.getByIngredient(ingredient);
-    }
-    if (area) {
-      return this.recipeService.getByArea(area);
-    }
-    if (category) {
-      return this.recipeService.getByCategory(category);
-    }
-    if (search) {
-      return this.recipeService.searchByName(search);
-    }
+  getAll() {
     return this.recipeService.getAll();
+  }
+
+  @Get('by-ingredient')
+  getByIngredient(@Query('i') i: string) {
+    return this.recipeService.getByIngredient(i);
+  }
+
+  @Get('by-category')
+  getByCategory(@Query('c') c: string) {
+    return this.recipeService.getByCategory(c);
+  }
+
+  @Get('by-country')
+  getByArea(@Query('a') a: string) {
+    return this.recipeService.getByArea(a);
+  }
+
+  @Get('by-letter')
+  getByFirstLetter(@Query('f') f: string) {
+    return this.recipeService.getByFirstLetter(f);
   }
 
   @Get(':id')

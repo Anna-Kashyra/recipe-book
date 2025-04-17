@@ -41,6 +41,12 @@ export class RecipeService {
     return response.data;
   }
 
+  async getByFirstLetter(letter: string) {
+    const url = `${this.baseUrl}/search.php?f=${letter}`;
+    const response = await axios.get(url);
+    return response.data;
+  }
+
   async getRecipeById(id: string) {
     const url = `${this.baseUrl}/lookup.php?i=${id}`;
     const response = await axios.get(url);
