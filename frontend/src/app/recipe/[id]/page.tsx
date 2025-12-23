@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import { notFound } from 'next/navigation';
 import { IMeal } from '@/models/IMeal';
 
@@ -32,9 +34,12 @@ export default async function RecipePage({ params }: { params: { id: string } })
   return (
     <div className="flex flex-col gap-6 row-center-2 items-center sm:items-center max-w-4xl mx-auto px-4">
       <h1 className="text-3xl font-bold">{meal.strMeal}</h1>
-      <img
+      <Image
         src={meal.strMealThumb}
         alt={meal.strMeal}
+        width={300}
+        height={200}
+        priority
         className="rounded-xl w-full max-w-lg object-cover"
       />
       <p className="text-gray-600 text-sm">

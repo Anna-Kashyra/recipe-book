@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { IMeal } from '@/models/IMeal';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -60,9 +61,12 @@ export default function RecipeListPage() {
         {meals.map((meal: IMeal) => (
           <li key={meal.idMeal} className="border rounded-xl shadow-md p-4">
             <Link href={`/recipe/${meal.idMeal}`} className="block">
-              <img
+              <Image
                 src={meal.strMealThumb}
                 alt={meal.strMeal}
+                width={300}
+                height={200}
+                priority
                 className="rounded-md w-full h-48 object-cover mb-2"
               />
               <h2 className="text-xl font-medium">{meal.strMeal}</h2>

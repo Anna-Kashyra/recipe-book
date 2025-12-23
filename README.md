@@ -22,7 +22,7 @@ cd recipe-book
 ### 2. Configure .env files
 - frontend/.env.local
 ```bash
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
 ```
 
 - backend/.env.local
@@ -55,3 +55,15 @@ npm run dev
 cd backend
 npm run start:dev
 ```
+
+## Resources
+
+To create a user API endpoints was used [Recipe API](https://www.themealdb.com/api.php)
+
+## Stay in touch
+
+- Author - [Anna Kashyra](https://github.com/Anna-Kashyra)
+
+## License
+
+Recipe Book is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

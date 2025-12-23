@@ -7,5 +7,5 @@ export interface IMeal {
   strInstructions: string;
   strTags: string;
   strYoutube: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
