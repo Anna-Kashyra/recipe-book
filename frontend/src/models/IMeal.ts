@@ -7,5 +7,6 @@ export interface IMeal {
   strInstructions: string;
   strTags: string;
   strYoutube: string;
-  [key: string]: unknown;
-};
+  [key: `strIngredient${number}`]: string | null;
+  [key: `strMeasure${number}`]: string | null;
+}

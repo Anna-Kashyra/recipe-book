@@ -1,9 +1,11 @@
+import Image from 'next/image';
+
 import { notFound } from 'next/navigation';
 import { IMeal } from '@/models/IMeal';
 import { SingleMeal } from '@/components/SingleMeal';
 
-async function getMealById(id: string): Promise<IMeal | null> {
-  const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
+async function getRecommendedMeal(): Promise<IMeal | null> {
+  const res = await fetch(`https://www.themealdb.com/api/json/v1/1/random.php`);
   const data = await res.json();
   return data.meals?.[0] || null;
 }
@@ -23,10 +25,8 @@ function getIngredients(meal: IMeal): string[] {
   return ingredients;
 }
 
-export default async function RecipePage({ params }: { params: { id: string } }) {
-  const { id } = await params;
-
-  const meal = await getMealById(id);
+export default async function RecommendedRecipePage() {
+  const meal = await getRecommendedMeal();
 
   if (!meal) return notFound();
 

@@ -1,21 +1,73 @@
 "use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { IMeal } from '@/models/IMeal';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { useEffect, useState } from 'react';
+import { IFilteredMeal } from "@/models/IFilterOption";
+import { IFilterOption } from "@/models/IFilterOption";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEffect, useState } from 'react';
+import { LetterToggle } from '@/components/LetterToggle';
+import { MealCard } from '@/components/MealCard';
+
+async function fetchList(endpoint: string) {
+  const res = await fetch(endpoint);
+  const data = await res.json();
+  return data.meals || [];
+}
+
+async function fetchMealsByFilter(
+  type: "i" | "a" | "c",
+  value: string
+): Promise<IFilteredMeal[]> {
+  const res = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/filter.php?${type}=${value}`
+  );
+  const data = await res.json();
+  return data.meals || [];
+}
 async function getMealsByLetter(letter: string): Promise<IMeal[]> {
   const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
   const data = await res.json();
   return data.meals || [];
 }
 
+function getFilterLabel(filter: { type: "i" | "a" | "c"; value: string }) {
+  switch (filter.type) {
+    case "i":
+      return `Ingredient: ${filter.value}`;
+    case "a":
+      return `Area: ${filter.value}`;
+    case "c":
+      return `Category: ${filter.value}`;
+    default:
+      return filter.value;
+  }
+}
+
 export default function RecipeListPage() {
   const [selectedLetter, setSelectedLetter] = useState<string>('a');
   const [meals, setMeals] = useState<IMeal[]>([]);
 
+  const [filteredMeals, setFilteredMeals] = useState<IFilteredMeal[]>([]);
+  const [ingredients, setIngredients] = useState<IFilterOption[]>([]);
+  const [areas, setAreas] = useState<IFilterOption[]>([]);
+  const [categories, setCategories] = useState<IFilterOption[]>([]);
+  const [ingredientValue, setIngredientValue] = useState<string>("");
+  const [areaValue, setAreaValue] = useState<string>("");
+  const [categoryValue, setCategoryValue] = useState<string>("");
+  const [activeFilter, setActiveFilter] = useState<
+    { type: "i" | "a" | "c"; value: string } | null
+  >(null);
+
+  const displayedMeals = activeFilter ? filteredMeals : meals;
+
+  // fetch meals by letter
   useEffect(() => {
     async function fetchMeals() {
       const fetchedMeals = await getMealsByLetter(selectedLetter);
@@ -25,56 +77,145 @@ export default function RecipeListPage() {
     fetchMeals();
   }, [selectedLetter]);
 
-  return (
-    <main className="flex flex-col gap-[32px] items-center">
-      <h1 className="text-2xl font-bold">Recipe List</h1>
+  // fetch ingredients, area and categories
+  useEffect(() => {
+    fetchList("https://www.themealdb.com/api/json/v1/1/list.php?i=list").then(
+      setIngredients
+    );
+    fetchList("https://www.themealdb.com/api/json/v1/1/list.php?a=list").then(
+      setAreas
+    );
+    fetchList("https://www.themealdb.com/api/json/v1/1/list.php?c=list").then(
+      setCategories
+    );
+  }, []);
 
-      <ToggleGroup type="single" value={selectedLetter} onValueChange={setSelectedLetter}>
-        <ToggleGroupItem value="a">A</ToggleGroupItem>
-        <ToggleGroupItem value="b">B</ToggleGroupItem>
-        <ToggleGroupItem value="c">C</ToggleGroupItem>
-        <ToggleGroupItem value="d">D</ToggleGroupItem>
-        <ToggleGroupItem value="e">E</ToggleGroupItem>
-        <ToggleGroupItem value="f">F</ToggleGroupItem>
-        <ToggleGroupItem value="g">G</ToggleGroupItem>
-        <ToggleGroupItem value="h">H</ToggleGroupItem>
-        <ToggleGroupItem value="i">I</ToggleGroupItem>
-        <ToggleGroupItem value="j">J</ToggleGroupItem>
-        <ToggleGroupItem value="k">K</ToggleGroupItem>
-        <ToggleGroupItem value="l">L</ToggleGroupItem>
-        <ToggleGroupItem value="m">M</ToggleGroupItem>
-        <ToggleGroupItem value="n">N</ToggleGroupItem>
-        <ToggleGroupItem value="o">O</ToggleGroupItem>
-        <ToggleGroupItem value="p">P</ToggleGroupItem>
-        <ToggleGroupItem value="q">Q</ToggleGroupItem>
-        <ToggleGroupItem value="r">R</ToggleGroupItem>
-        <ToggleGroupItem value="s">S</ToggleGroupItem>
-        <ToggleGroupItem value="t">T</ToggleGroupItem>
-        <ToggleGroupItem value="u">U</ToggleGroupItem>
-        <ToggleGroupItem value="v">V</ToggleGroupItem>
-        <ToggleGroupItem value="w">W</ToggleGroupItem>
-        <ToggleGroupItem value="x">X</ToggleGroupItem>
-        <ToggleGroupItem value="y">Y</ToggleGroupItem>
-        <ToggleGroupItem value="z">Z</ToggleGroupItem>
-      </ToggleGroup>
+  // fetch meals by active filter
+  useEffect(() => {
+    if (!activeFilter) return;
+
+    fetchMealsByFilter(activeFilter.type, activeFilter.value).then(async (data) => {
+      const detailedMeals = await Promise.all(
+        data.map(async (m) => {
+          const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`);
+          const mealData = await res.json();
+          return mealData.meals[0];
+        })
+      );
+      setFilteredMeals(detailedMeals);
+    });
+  }, [activeFilter]);
+
+  return (
+    <section className="flex flex-col justify-center items-center gap-9">
+      <h1 className="text-2xl font-bold">
+        {activeFilter
+          ? `Recipe List by ${getFilterLabel(activeFilter)}`
+          : "All Recipe List"}
+      </h1>
+
+      {!activeFilter && (
+        <LetterToggle selectedLetter={selectedLetter} onSelectLetter={setSelectedLetter} />
+      )}
+
+      {/* FILTERS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 justify-items-center gap-4 w-full max-w-4xl">
+        {/* Ingredient */}
+        <Select
+          value={ingredientValue}
+          onValueChange={(v) => {
+            setIngredientValue(v);
+            setActiveFilter({ type: "i", value: v });
+            setAreaValue("");
+            setCategoryValue("");
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Ingredient" />
+          </SelectTrigger>
+          <SelectContent>
+            {ingredients.map((item) => (
+              <SelectItem
+                key={item.strIngredient}
+                value={item.strIngredient!}
+              >
+                {item.strIngredient}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Area */}
+        <Select
+          value={areaValue}
+          onValueChange={(v) => {
+            setAreaValue(v);
+            setActiveFilter({ type: "a", value: v });
+            setIngredientValue("");
+            setCategoryValue("");
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Area" />
+          </SelectTrigger>
+          <SelectContent>
+            {areas.map((item) => (
+              <SelectItem key={item.strArea} value={item.strArea!}>
+                {item.strArea}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Category */}
+        <Select
+          value={categoryValue}
+          onValueChange={(v) => {
+            setCategoryValue(v);
+            setActiveFilter({ type: "c", value: v });
+            setIngredientValue("");
+            setAreaValue("");
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((item) => (
+              <SelectItem
+                key={item.strCategory}
+                value={item.strCategory!}
+              >
+                {item.strCategory}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Reset button */}
+      {activeFilter && (
+        <button
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          onClick={() => {
+            setActiveFilter(null);
+            setFilteredMeals([]);
+            setIngredientValue("");
+            setAreaValue("");
+            setCategoryValue("");
+          }}
+        >
+          Reset Filters
+        </button>
+      )
+      }
+
+      {/* Meals List */}
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-        {meals.map((meal: IMeal) => (
-          <li key={meal.idMeal} className="border rounded-xl shadow-md p-4">
-            <Link href={`/recipe/${meal.idMeal}`} className="block">
-              <Image
-                src={meal.strMealThumb}
-                alt={meal.strMeal}
-                width={300}
-                height={200}
-                priority
-                className="rounded-md w-full h-48 object-cover mb-2"
-              />
-              <h2 className="text-xl font-medium">{meal.strMeal}</h2>
-              <p className="text-sm text-gray-600">{meal.strCategory} · {meal.strArea}</p>
-            </Link>
-          </li>
+        {displayedMeals.map((meal: IMeal | IFilteredMeal) => (
+          <MealCard key={meal.idMeal} meal={meal} />
         ))}
       </ul>
-    </main>
+    </section>
   )
 }

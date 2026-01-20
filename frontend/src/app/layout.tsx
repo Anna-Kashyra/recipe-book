@@ -16,13 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body>
-    <div
-      className="grid grid-rows-[100px_1fr_100px] items-center justify-items-center min-h-screen px-20 gap-10 sm:px-15">
-      <Header />
-      <main>{children}</main>
-      <Footer />
-    </div>
+    <body className="grid grid-rows-[auto_1fr_auto] min-h-screen">
+      <header className="container mx-auto flex justify-center items-center pt-8 pb-8">
+        <Header />
+      </header>
+        <main className="container mx-auto pt-12 pb-12">{children}</main>
+      <footer className="container mx-auto flex justify-center items-center pt-8 pb-8">
+        <Footer />
+      </footer>
     </body>
     </html>
   );
