@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 import { notFound } from 'next/navigation';
 import { IMeal } from '@/models/IMeal';
 import { SingleMeal } from '@/components/SingleMeal';

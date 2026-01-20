@@ -16,7 +16,7 @@ type SingleMealProps = {
 export const SingleMeal: FC<SingleMealProps> = ( {mealTitle, mealThumb, mealThumbAlt, mealCategory, mealArea, mealIngredients, mealInstructions, mealYoutube} ) => {
   return (
     <div className="flex flex-col gap-6 row-center-2 items-center sm:items-center max-w-4xl mx-auto px-4">
-      <h1 className="text-3xl font-bold">{mealTitle}</h1>
+      <h1 className="text-3xl text-center font-bold">{mealTitle}</h1>
       <Image
         src={mealThumb}
         alt={mealThumbAlt}

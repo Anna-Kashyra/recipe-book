@@ -5,13 +5,8 @@ import { RecipeModule } from './recipe/recipe.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [RecipeModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    RecipeModule,],
+  imports: [RecipeModule, ConfigModule.forRoot({ isGlobal: true })],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-
