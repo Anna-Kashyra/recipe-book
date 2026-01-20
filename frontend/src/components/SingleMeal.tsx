@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import Image from 'next/image';
+import Link from "next/link";
 
 type SingleMealProps = {
   mealTitle: string;
@@ -24,8 +25,24 @@ export const SingleMeal: FC<SingleMealProps> = ( {mealTitle, mealThumb, mealThum
         priority
         className="rounded-xl w-full max-w-lg object-cover"
       />
-      <p className="text-gray-600 text-sm">
-        <strong>Category:</strong> {mealCategory} | <strong>Area:</strong> {mealArea}
+      <p className="text-gray-600 text-sm flex gap-2 flex-wrap items-center">
+        <strong>Category:</strong>
+        <Link
+          href={`/recipe/category/${encodeURIComponent(mealCategory)}`}
+          className="text-blue-600 underline hover:no-underline"
+        >
+          {mealCategory}
+        </Link>
+
+        <span>|</span>
+
+        <strong>Area:</strong>
+        <Link
+          href={`/recipe/area/${encodeURIComponent(mealArea)}`}
+          className="text-blue-600 underline hover:no-underline"
+        >
+          {mealArea}
+        </Link>
       </p>
 
       <div className="flex gap-10">
@@ -49,7 +66,7 @@ export const SingleMeal: FC<SingleMealProps> = ( {mealTitle, mealThumb, mealThum
           <a
             href={mealYoutube}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer nofollow"
             className="text-lg text-blue-600 underline"
           >
             Watch on YouTube

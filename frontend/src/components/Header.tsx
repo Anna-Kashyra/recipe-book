@@ -12,17 +12,17 @@ export const Header: FC = () => {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
+          <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
             <Link href={"/"}>Home</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
-            <Link href={"/recipes"}>All Recipes</Link>
+          <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
+            <Link href={"/recipe"}>All Recipes</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
+          <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
             <Link href={`/recommended`}>Recipe of the Day</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>

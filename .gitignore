@@ -4,6 +4,10 @@
 /build
 /.next/
 /out/
+backend/dist/
+backend/node_modules/
+frontend/.next/
+frontend/node_modules
 
 # Logs
 logs

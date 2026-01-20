@@ -13,7 +13,7 @@ interface MealCardProps {
 export const MealCard: FC<MealCardProps> = ({ meal }) => {
   return (
     <li className="border rounded-xl shadow-md p-4">
-      <Link href={`/recipes/${meal.idMeal}`} className="block">
+      <Link href={`/recipe/${meal.idMeal}`} className="block">
         <Image
           src={meal.strMealThumb}
           alt={meal.strMeal}
@@ -25,14 +25,14 @@ export const MealCard: FC<MealCardProps> = ({ meal }) => {
       </Link>
       <p className="text-sm text-gray-600 flex gap-2 flex-wrap">
         <Link
-          href={`/recipes/category/${meal.strCategory}`}
+          href={`/recipe/category/${encodeURIComponent(meal.strCategory)}`}
           className="underline text-blue-600"
         >
           {meal.strCategory}
         </Link>
         ·
         <Link
-          href={`/recipes/area/${meal.strArea}`}
+          href={`/recipe/area/${encodeURIComponent(meal.strArea)}`}
           className="underline text-blue-600"
         >
           {meal.strArea}
