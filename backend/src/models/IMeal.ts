@@ -16,3 +16,23 @@ export interface IMealSummary {
   strMeal: string;
   strMealThumb: string;
 }
+
+export interface MealDbResponse<T> {
+  meals: T[] | null;
+}
+
+export interface Ingredient {
+  idIngredient: string;
+  strIngredient: string;
+  strDescription: string | null;
+  strThumb: string;
+  strType: string | null;
+}
+
+export interface Area {
+  strArea: string;
+}
+
+export interface Category {
+  strCategory: string;
+}

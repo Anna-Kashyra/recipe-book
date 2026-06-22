@@ -1,37 +1,66 @@
 import { Controller, Get, Query, Param } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
+import {
+  Area,
+  Category,
+  IMeal,
+  Ingredient,
+  MealDbResponse,
+} from '../models/IMeal';
 
-@Controller('recipes')
+@Controller('recipe')
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
   @Get()
-  getAll() {
+  getAll(): Promise<{ meals: IMeal[] }> {
     return this.recipeService.getAll();
   }
 
-  @Get('by-ingredient')
-  getByIngredient(@Query('i') i: string) {
-    return this.recipeService.getByIngredient(i);
+  @Get('get-by-letter')
+  getMealsByLetter(@Query('f') f: string): Promise<{ meals: IMeal[] }> {
+    return this.recipeService.getMealsByLetter(f);
   }
 
-  @Get('by-category')
-  getByCategory(@Query('c') c: string) {
-    return this.recipeService.getByCategory(c);
+  @Get('get-by-category')
+  getMealsByCategory(@Query('c') c: string): Promise<{ meals: IMeal[] }> {
+    return this.recipeService.getMealsByCategory(c);
   }
 
-  @Get('by-country')
-  getByArea(@Query('a') a: string) {
-    return this.recipeService.getByArea(a);
+  @Get('get-by-area')
+  getMealsByArea(@Query('a') a: string): Promise<{ meals: IMeal[] }> {
+    return this.recipeService.getMealsByArea(a);
   }
 
-  @Get('by-letter')
-  getByFirstLetter(@Query('f') f: string) {
-    return this.recipeService.getByFirstLetter(f);
+  @Get('get-by-ingredient')
+  getMealsByIngredient(@Query('i') i: string): Promise<{ meals: IMeal[] }> {
+    return this.recipeService.getMealsByIngredient(i);
   }
 
+  @Get('ingredients')
+  getIngredients(): Promise<MealDbResponse<Ingredient>> {
+    return this.recipeService.getIngredients();
+  }
+
+  @Get('areas')
+  getAreas(): Promise<MealDbResponse<Area>> {
+    return this.recipeService.getAreas();
+  }
+
+  @Get('categories')
+  getCategories(): Promise<MealDbResponse<Category>> {
+    return this.recipeService.getCategories();
+  }
+
+  @Get('filter')
+  getByFilter(
+    @Query('type') type: 'i' | 'a' | 'c',
+    @Query('value') value: string,
+  ) {
+    return this.recipeService.getByFilter(type, value);
+  }
   @Get(':id')
-  getRecipeById(@Param('id') id: string) {
+  getRecipeById(@Param('id') id: string): Promise<{ meals: IMeal[] }> {
     return this.recipeService.getRecipeById(id);
   }
 }

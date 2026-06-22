@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import {
+  Area,
+  Category,
+  IMeal,
+  Ingredient,
+  MealDbResponse,
+} from '../models/IMeal';
 
 @Injectable()
 export class RecipeService {
@@ -11,45 +18,53 @@ export class RecipeService {
     this.baseUrl = `https://www.themealdb.com/api/json/v1/1`;
   }
 
-  async getByIngredient(ingredient: string) {
-    const url = `${this.baseUrl}/filter.php?i=${ingredient}`;
-    const response = await axios.get(url);
-    return response.data;
+  private async fetchFromApi<T>(endpoint: string) {
+    try {
+      const response = await axios.get<T>(`${this.baseUrl}${endpoint}`);
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw new Error('Failed to fetch data from MealDB');
+    }
   }
 
-  async getByArea(area: string) {
-    const url = `${this.baseUrl}/filter.php?a=${area}`;
-    const response = await axios.get(url);
-    return response.data;
+  async getAll(): Promise<{ meals: IMeal[] }> {
+    return this.fetchFromApi(`/search.php?s=`);
   }
 
-  async getByCategory(category: string) {
-    const url = `${this.baseUrl}/filter.php?c=${category}`;
-    const response = await axios.get(url);
-    return response.data;
+  async getMealsByLetter(letter: string): Promise<{ meals: IMeal[] }> {
+    return this.fetchFromApi(`/search.php?f=${letter}`);
   }
 
-  async searchByName(search: string) {
-    const url = `${this.baseUrl}/search.php?s=${search}`;
-    const response = await axios.get(url);
-    return response.data;
+  async getMealsByCategory(category: string): Promise<{ meals: IMeal[] }> {
+    return this.fetchFromApi(`/filter.php?c=${encodeURIComponent(category)}`);
   }
 
-  async getAll() {
-    const url = `${this.baseUrl}/search.php?s=`;
-    const response = await axios.get(url);
-    return response.data;
+  async getMealsByArea(area: string): Promise<{ meals: IMeal[] }> {
+    return this.fetchFromApi(`/filter.php?a=${encodeURIComponent(area)}`);
   }
 
-  async getByFirstLetter(letter: string) {
-    const url = `${this.baseUrl}/search.php?f=${letter}`;
-    const response = await axios.get(url);
-    return response.data;
+  async getMealsByIngredient(ingredient: string): Promise<{ meals: IMeal[] }> {
+    return this.fetchFromApi(`/filter.php?i=${encodeURIComponent(ingredient)}`);
   }
 
-  async getRecipeById(id: string) {
-    const url = `${this.baseUrl}/lookup.php?i=${id}`;
-    const response = await axios.get(url);
-    return response.data;
+  async getIngredients(): Promise<MealDbResponse<Ingredient>> {
+    return this.fetchFromApi<MealDbResponse<Ingredient>>('/list.php?i=list');
+  }
+
+  async getAreas(): Promise<MealDbResponse<Area>> {
+    return this.fetchFromApi<MealDbResponse<Area>>('/list.php?a=list');
+  }
+
+  async getCategories(): Promise<MealDbResponse<Category>> {
+    return this.fetchFromApi<MealDbResponse<Category>>('/list.php?c=list');
+  }
+
+  getByFilter(type: 'i' | 'a' | 'c', value: string) {
+    return this.fetchFromApi(`/filter.php?${type}=${value}`);
+  }
+
+  async getRecipeById(id: string): Promise<{ meals: IMeal[] }> {
+    return this.fetchFromApi(`/lookup.php?i=${id}`);
   }
 }

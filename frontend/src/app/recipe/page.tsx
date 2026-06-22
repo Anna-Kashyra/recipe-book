@@ -26,13 +26,13 @@ async function fetchMealsByFilter(
   value: string
 ): Promise<IFilteredMeal[]> {
   const res = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/filter.php?${type}=${value}`
+    `http://localhost:5000/recipe/filter?type=${type}&value=${encodeURIComponent(value)}`
   );
   const data = await res.json();
   return data.meals || [];
 }
 async function getMealsByLetter(letter: string): Promise<IMeal[]> {
-  const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
+  const res = await fetch(`http://localhost:5000/recipe/get-by-letter?f=${letter}`);
   const data = await res.json();
   return data.meals || [];
 }
@@ -79,13 +79,13 @@ export default function RecipeListPage() {
 
   // fetch ingredients, area and categories
   useEffect(() => {
-    fetchList("https://www.themealdb.com/api/json/v1/1/list.php?i=list").then(
+    fetchList("http://localhost:5000/recipe/ingredients").then(
       setIngredients
     );
-    fetchList("https://www.themealdb.com/api/json/v1/1/list.php?a=list").then(
+    fetchList("http://localhost:5000/recipe/areas").then(
       setAreas
     );
-    fetchList("https://www.themealdb.com/api/json/v1/1/list.php?c=list").then(
+    fetchList("http://localhost:5000/recipe/categories").then(
       setCategories
     );
   }, []);
@@ -97,7 +97,7 @@ export default function RecipeListPage() {
     fetchMealsByFilter(activeFilter.type, activeFilter.value).then(async (data) => {
       const detailedMeals = await Promise.all(
         data.map(async (m) => {
-          const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`);
+          const res = await fetch(`http://localhost:5000/recipe/${m.idMeal}`);
           const mealData = await res.json();
           return mealData.meals[0];
         })

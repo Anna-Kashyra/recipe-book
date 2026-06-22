@@ -1,26 +1,20 @@
-import { IMeal } from "@/models/IMeal";
+import { IMeal, IMealSummary } from '@/models/IMeal';
 import { MealCard } from "@/components/MealCard";
 
 interface Props {
   params: Promise<{ category: string }>;
 }
 
-interface IMealSummary {
-  idMeal: string;
-  strMeal: string;
-  strMealThumb: string;
-}
-
 async function fetchMealsByCategory(category: string): Promise<IMeal[]> {
   const res = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/filter.php?c=${decodeURIComponent(category)}`,
+    `http://localhost:5000/recipe/get-by-category?c=${decodeURIComponent(category)}`,
     { cache: "no-store" }
   );
   const data = await res.json();
 
   return await Promise.all(
     data.meals.map(async (m: IMealSummary) => {
-      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`);
+      const res = await fetch(`http://localhost:5000/recipe/${m.idMeal}`);
       const mealData = await res.json();
       return mealData.meals[0];
     })
