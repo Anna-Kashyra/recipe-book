@@ -1,7 +1,7 @@
 "use client";
 
+import { API_BASE_URL } from '@/lib/api';
 import { IMeal } from '@/models/IMeal';
-import { IFilteredMeal } from "@/models/IFilterOption";
 import { IFilterOption } from "@/models/IFilterOption";
 
 import {
@@ -21,51 +21,48 @@ async function fetchList(endpoint: string) {
   return data.meals || [];
 }
 
-async function fetchMealsByFilter(
-  type: "i" | "a" | "c",
-  value: string
-): Promise<IFilteredMeal[]> {
-  const res = await fetch(
-    `http://localhost:5000/recipe/filter?type=${type}&value=${encodeURIComponent(value)}`
-  );
-  const data = await res.json();
-  return data.meals || [];
-}
 async function getMealsByLetter(letter: string): Promise<IMeal[]> {
-  const res = await fetch(`http://localhost:5000/recipe/get-by-letter?f=${letter}`);
+  const res = await fetch(`${API_BASE_URL}/recipe/get-by-letter?f=${letter}`);
   const data = await res.json();
   return data.meals || [];
 }
 
-function getFilterLabel(filter: { type: "i" | "a" | "c"; value: string }) {
-  switch (filter.type) {
-    case "i":
-      return `Ingredient: ${filter.value}`;
-    case "a":
-      return `Area: ${filter.value}`;
-    case "c":
-      return `Category: ${filter.value}`;
-    default:
-      return filter.value;
-  }
+async function fetchMealsByMultiFilter(filters: {
+  area?: string;
+  category?: string;
+  ingredient?: string;
+}): Promise<IMeal[]> {
+  const params = new URLSearchParams();
+  if (filters.area) params.set('area', filters.area);
+  if (filters.category) params.set('category', filters.category);
+  if (filters.ingredient) params.set('ingredient', filters.ingredient);
+
+  const res = await fetch(`${API_BASE_URL}/recipe/multi-filter?${params}`);
+  const data = await res.json();
+  return data.meals || [];
 }
 
 export default function RecipeListPage() {
   const [selectedLetter, setSelectedLetter] = useState<string>('a');
   const [meals, setMeals] = useState<IMeal[]>([]);
 
-  const [filteredMeals, setFilteredMeals] = useState<IFilteredMeal[]>([]);
+  const [filteredMeals, setFilteredMeals] = useState<IMeal[]>([]);
   const [ingredients, setIngredients] = useState<IFilterOption[]>([]);
   const [areas, setAreas] = useState<IFilterOption[]>([]);
   const [categories, setCategories] = useState<IFilterOption[]>([]);
   const [ingredientValue, setIngredientValue] = useState<string>("");
   const [areaValue, setAreaValue] = useState<string>("");
   const [categoryValue, setCategoryValue] = useState<string>("");
-  const [activeFilter, setActiveFilter] = useState<
-    { type: "i" | "a" | "c"; value: string } | null
-  >(null);
+  const [activeFilter, setActiveFilter] = useState<{
+    area?: string;
+    category?: string;
+    ingredient?: string;
+  } | null>(null);
 
-  const displayedMeals = activeFilter ? filteredMeals : meals;
+  const hasActiveFilter = activeFilter && (
+    activeFilter.area || activeFilter.category || activeFilter.ingredient
+  );
+  const displayedMeals = hasActiveFilter ? filteredMeals : meals;
 
   // fetch meals by letter
   useEffect(() => {
@@ -79,13 +76,13 @@ export default function RecipeListPage() {
 
   // fetch ingredients, area and categories
   useEffect(() => {
-    fetchList("http://localhost:5000/recipe/ingredients").then(
+    fetchList( `${API_BASE_URL}/recipe/ingredients`).then(
       setIngredients
     );
-    fetchList("http://localhost:5000/recipe/areas").then(
+    fetchList(`${API_BASE_URL}/recipe/areas`).then(
       setAreas
     );
-    fetchList("http://localhost:5000/recipe/categories").then(
+    fetchList(`${API_BASE_URL}/recipe/categories`).then(
       setCategories
     );
   }, []);
@@ -93,28 +90,22 @@ export default function RecipeListPage() {
   // fetch meals by active filter
   useEffect(() => {
     if (!activeFilter) return;
-
-    fetchMealsByFilter(activeFilter.type, activeFilter.value).then(async (data) => {
-      const detailedMeals = await Promise.all(
-        data.map(async (m) => {
-          const res = await fetch(`http://localhost:5000/recipe/${m.idMeal}`);
-          const mealData = await res.json();
-          return mealData.meals[0];
-        })
-      );
-      setFilteredMeals(detailedMeals);
-    });
+    fetchMealsByMultiFilter(activeFilter).then(setFilteredMeals);
   }, [activeFilter]);
 
   return (
     <section className="flex flex-col justify-center items-center gap-9">
       <h1 className="text-2xl font-bold">
-        {activeFilter
-          ? `Recipe List by ${getFilterLabel(activeFilter)}`
+        {hasActiveFilter
+          ? `Recipe List by ${[
+            activeFilter.area && `Area: ${activeFilter.area}`,
+            activeFilter.category && `Category: ${activeFilter.category}`,
+            activeFilter.ingredient && `Ingredient: ${activeFilter.ingredient}`,
+          ].filter(Boolean).join(' + ')}`
           : "All Recipe List"}
       </h1>
 
-      {!activeFilter && (
+      {!hasActiveFilter && (
         <LetterToggle selectedLetter={selectedLetter} onSelectLetter={setSelectedLetter} />
       )}
 
@@ -125,9 +116,7 @@ export default function RecipeListPage() {
           value={ingredientValue}
           onValueChange={(v) => {
             setIngredientValue(v);
-            setActiveFilter({ type: "i", value: v });
-            setAreaValue("");
-            setCategoryValue("");
+            setActiveFilter(prev => ({ ...prev, ingredient: v }));
           }}
         >
           <SelectTrigger>
@@ -150,9 +139,7 @@ export default function RecipeListPage() {
           value={areaValue}
           onValueChange={(v) => {
             setAreaValue(v);
-            setActiveFilter({ type: "a", value: v });
-            setIngredientValue("");
-            setCategoryValue("");
+            setActiveFilter(prev => ({ ...prev, area: v }));
           }}
         >
           <SelectTrigger>
@@ -172,9 +159,7 @@ export default function RecipeListPage() {
           value={categoryValue}
           onValueChange={(v) => {
             setCategoryValue(v);
-            setActiveFilter({ type: "c", value: v });
-            setIngredientValue("");
-            setAreaValue("");
+            setActiveFilter(prev => ({ ...prev, category: v }));
           }}
         >
           <SelectTrigger>
@@ -194,7 +179,7 @@ export default function RecipeListPage() {
       </div>
 
       {/* Reset button */}
-      {activeFilter && (
+      {hasActiveFilter && (
         <button
           className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           onClick={() => {
@@ -212,7 +197,7 @@ export default function RecipeListPage() {
 
       {/* Meals List */}
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-        {displayedMeals.map((meal: IMeal | IFilteredMeal) => (
+        {displayedMeals.map((meal: IMeal ) => (
           <MealCard key={meal.idMeal} meal={meal} />
         ))}
       </ul>

@@ -1,10 +1,10 @@
+import { API_BASE_URL } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import { IMeal } from '@/models/IMeal';
 import { SingleMeal } from '@/components/SingleMeal';
 
 async function getMealById(id: string): Promise<IMeal | null> {
-  // const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
-  const res = await fetch(`http://localhost:5000/recipe/${id}`);
+  const res = await fetch(`${API_BASE_URL}/recipe/${id}`);
   const data = await res.json();
   return data.meals?.[0] || null;
 }
@@ -24,7 +24,7 @@ function getIngredients(meal: IMeal): string[] {
   return ingredients;
 }
 
-export default async function RecipePage({ params }: { params: { id: string } }) {
+export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const meal = await getMealById(id);

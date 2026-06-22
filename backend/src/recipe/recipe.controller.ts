@@ -59,6 +59,19 @@ export class RecipeController {
   ) {
     return this.recipeService.getByFilter(type, value);
   }
+
+  @Get('multi-filter')
+  getByMultipleFilters(
+    @Query('area') area?: string,
+    @Query('category') category?: string,
+    @Query('ingredient') ingredient?: string,
+  ) {
+    return this.recipeService.getByMultipleFilters({
+      area,
+      category,
+      ingredient,
+    });
+  }
   @Get(':id')
   getRecipeById(@Param('id') id: string): Promise<{ meals: IMeal[] }> {
     return this.recipeService.getRecipeById(id);

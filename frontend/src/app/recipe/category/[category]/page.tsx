@@ -1,4 +1,5 @@
-import { IMeal, IMealSummary } from '@/models/IMeal';
+import { API_BASE_URL } from '@/lib/api';
+import { IMeal } from '@/models/IMeal';
 import { MealCard } from "@/components/MealCard";
 
 interface Props {
@@ -7,23 +8,17 @@ interface Props {
 
 async function fetchMealsByCategory(category: string): Promise<IMeal[]> {
   const res = await fetch(
-    `http://localhost:5000/recipe/get-by-category?c=${decodeURIComponent(category)}`,
+    `${API_BASE_URL}/recipe/get-by-category?c=${encodeURIComponent(category)}`,
     { cache: "no-store" }
   );
-  const data = await res.json();
 
-  return await Promise.all(
-    data.meals.map(async (m: IMealSummary) => {
-      const res = await fetch(`http://localhost:5000/recipe/${m.idMeal}`);
-      const mealData = await res.json();
-      return mealData.meals[0];
-    })
-  );
+  const data = await res.json();
+  return data.meals ?? [];
 }
 
 export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
-  const meals = await fetchMealsByCategory(category);
+  const meals = await fetchMealsByCategory(decodeURIComponent(category));
 
   return (
     <section className="flex flex-col justify-center items-center gap-6">

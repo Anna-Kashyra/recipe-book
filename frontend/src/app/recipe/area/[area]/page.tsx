@@ -1,4 +1,5 @@
-import { IMeal, IMealSummary } from '@/models/IMeal';
+import { API_BASE_URL } from '@/lib/api';
+import { IMeal } from '@/models/IMeal';
 import { MealCard } from "@/components/MealCard";
 
 interface Props {
@@ -7,18 +8,12 @@ interface Props {
 
 async function fetchMealsByArea(area: string): Promise<IMeal[]> {
   const res = await fetch(
-    `http://localhost:5000/recipe/get-by-area?a=${encodeURIComponent(area)}`,
+    `${API_BASE_URL}/recipe/get-by-area?a=${encodeURIComponent(area)}`,
     { cache: "no-store" }
   );
-  const data = await res.json();
 
-  return await Promise.all(
-    data.meals.map(async (m: IMealSummary) => {
-      const res = await fetch(`http://localhost:5000/recipe/${m.idMeal}`);
-      const mealData = await res.json();
-      return mealData.meals[0];
-    })
-  );
+  const data = await res.json();
+  return data.meals ?? [];
 }
 
 export default async function AreaPage({ params }: Props) {
