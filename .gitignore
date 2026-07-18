@@ -79,6 +79,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
+/backend/.env
+/frontend/.env.local
 
 # vercel
 .vercel
