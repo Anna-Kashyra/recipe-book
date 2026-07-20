@@ -1,7 +1,10 @@
 # Recipe Book
 
-This repository contains a full-stack application with a separated frontend (Next.js) and backend (NestJS) located in different folders.
-Both applications run independently on separate ports and communicate via HTTP APIs.
+Recipe Book is a full-stack web application with a separated frontend (Next.js) and backend (NestJS) located in different folders. Both applications run independently on separate ports and communicate via HTTP APIs.
+
+The project allows users to browse recipes, view detailed cooking instructions, and discover a featured "Recipe of the Day". The backend acts as a dedicated API layer that retrieves and processes recipe data from TheMealDB service, while the frontend provides a responsive and user-friendly interface for interacting with the data.
+
+The application demonstrates a modern full-stack architecture, including REST API integration, server-side communication between services, and deployment of the frontend and backend as independent applications on Vercel and Render.
 
 ## Tech Stack
 
