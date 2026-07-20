@@ -32,7 +32,7 @@ The application demonstrates a modern full-stack architecture, including REST AP
 
 ## Home Page Screenshot
 
-![Home Page](./screenshots/home-page.png)
+![Home Page](home-page.png)
 
 ## Features
 
