@@ -3,6 +3,44 @@
 This repository contains a full-stack application with a separated frontend (Next.js) and backend (NestJS) located in different folders.
 Both applications run independently on separate ports and communicate via HTTP APIs.
 
+## Tech Stack
+
+### Frontend
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- Radix UI
+- Axios
+
+### Backend
+- NestJS
+- TypeScript
+- REST API
+
+### Deployment
+- Frontend deployed on Vercel
+- Backend deployed on Render
+- External API: TheMealDB
+
+## Live Demo
+
+[Frontend (Vercel)](https://recipe-book-ak.vercel.app)
+
+## Home Page Screenshot
+
+![Home Page](./screenshots/home-page.png)
+
+## Features
+
+- View all recipes
+- Filter recipes by first letter
+- Filter recipes by ingredients, area and category
+- View recipe details
+- Get a random "Recipe of the Day"
+- Responsive UI
+- REST API integration
+
 ## Project Structure
 
 root/:
@@ -22,7 +60,7 @@ cd recipe-book
 ### 2. Configure .env files
 - frontend/.env.local
 ```bash
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
 
 - backend/.env.local
