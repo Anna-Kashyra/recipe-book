@@ -26,6 +26,11 @@ export const Header: FC = () => {
             <Link href={`/recommended`}>Recipe of the Day</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
+        <NavigationMenuItem>
+          <a href="/recommended">
+            Recipe of the Day
+          </a>
+        </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
   )
