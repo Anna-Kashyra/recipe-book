@@ -1,3 +1,5 @@
+'use client';
+
 import { FC } from 'react';
 import {
   NavigationMenu,
@@ -25,11 +27,6 @@ export const Header: FC = () => {
           <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} text-lg font-medium transition duration-300 hover:underline`}>
             <Link href={`/recommended`}>Recipe of the Day</Link>
           </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <a href="/recommended">
-            Recipe of the Day
-          </a>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
